@@ -1,10 +1,10 @@
-import Vue from 'vue'
-import App from './App.vue'
+import Vue from 'vue';
+import App from './App.vue';
 import router from './router';
-// import { initializeApp } from "firebase/app";
-// import { getAuth, onAuthStateChanged } from "firebase/auth";
-// import { getAnalytics } from "firebase/analytics";
-import firebase from 'firebase/compat/app'
+import firebase from 'firebase';
+import 'firebase/firestore';
+import store from './store';
+
 
 Vue.config.productionTip = false
 
@@ -18,25 +18,14 @@ const firebaseConfig = {
   measurementId: "G-EXLEYDPDVQ"
 };
 firebase.initializeApp(firebaseConfig);
-
-// const app = initializeApp(firebaseConfig);
-// console.log(app);
-// const analytics = getAnalytics(app);
-// const auth = getAuth();
-
-// onAuthStateChanged(auth, user => { console.log(user); });
-// onAuthStateChanged(auth, user => {
-//   if (user != null) {
-//     console.log('成功');
-//   } else {
-//     console.log('失敗');
-//   }
-// })
+const db = firebase.firestore();
+export default db;
 
 
 new Vue({
   el: '#app',
   router,
+  store,
   render: h => h(App),
 }).$mount('#app')
 
