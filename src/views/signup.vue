@@ -36,32 +36,17 @@ export default {
             password: ''
         }
     },
-    created: function() {
-    // firebaseのデータベースと接続
-        this.db = firebase.firestore()
-    // firestoreの"testuser"という名のコレクション
-        this.dbData = this.db.collection("user")
-        
-    },
     methods: {
         signUp: function () {
-        // firebaseのauth機能のメール認証を行う
-            firebase.auth().createUserWithEmailAndPassword(this.mail, this.password)
-            .then(user => {
-                alert('Create account: ', user.email)
-            })
-            .catch(error => {
-                alert(error.message)
-            });
-        // firebaseのデータベースへ【ユーザー名】と【メールアドレス】を保存
-            this.dbData.add({
-                username: this.username
-            })
-            .then(function () {
-                alert('成功')
-            })
-            .catch(function () {
-                alert('失敗')
+            this.db = firebase.firestore()
+            this.dbData = this.db.collection("user")
+            
+            this.$store.dispatch("signUp", {
+                // username: this.username,
+                mail: this.mail,
+                password: this.password,
+                username: this.username,
+                dbData: this.dbData
             })
         }
     }

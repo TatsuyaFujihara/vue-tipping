@@ -18,8 +18,7 @@ const firebaseConfig = {
   measurementId: "G-EXLEYDPDVQ"
 };
 firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-export default db;
+
 
 
 new Vue({
