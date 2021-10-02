@@ -16,34 +16,31 @@ export default new Vuex.Store({
     },
 
     mutations: {
-        success() {
-            console.log("成功");
+        signUp() {
+            
         },
-        miss() {
-            console.log("失敗");
-        },
-        
     },
 
     actions: {
-        signUp({commit}, { mail, password, username, dbData}) {
+        signUp({commit}, {mail, password, username, dbData}) {
             firebase.auth().createUserWithEmailAndPassword(mail, password)
             .then(user => {
-                commit('success', user);
+                console.log('Create account: ', user.email)
             })
             .catch(error => {
-                commit('miss', error);
+                console.log(error.id)
             });
             
             dbData.add({
                 username: username
             })
             .then(function () {
-                console.log('成功')
+                console.log('ユーザー名登録-成功')
             })
             .catch(function () {
-                console.log('失敗')
-            })
+                console.log('ユーザー名登録-失敗')
+            });
+            commit('signUp');
         },
     }
 });
