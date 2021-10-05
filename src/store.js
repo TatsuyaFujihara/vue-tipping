@@ -19,6 +19,9 @@ export default new Vuex.Store({
         signUp() {
             
         },
+        login() {
+            
+        },
     },
 
     actions: {
@@ -42,5 +45,16 @@ export default new Vuex.Store({
             });
             commit('signUp');
         },
+        login({commit}, {mail, password}) {
+            firebase.auth().signInWithEmailAndPassword(mail, password)
+            .then(user => {
+                console.log('ログイン成功', user.email)
+            })
+            .catch(error => {
+                console.log(error.id)
+            });
+            commit('login');
+        }
+            
     }
 });

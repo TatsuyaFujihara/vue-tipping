@@ -1,18 +1,50 @@
 <template>
-  <div class="login">
-    <h2>Login</h2>
-  </div>
+    <div class="login">
+        <h2>Login</h2>
+        <table>
+            <tr>
+                <td>メールアドレス</td>
+                <td><input type="text" placeholder="Mail" v-model="mail"></td>
+            </tr>
+            <tr>
+                <td>パスワード</td>
+                <td><input type="password" placeholder="Password" v-model="password"></td>
+            </tr>
+        </table>
+        <button @click="Login">ログイン</button>
+    </div>
 </template>
 
 
 <script>
+// import firebase from 'firebase'
+
 export default {
   name: 'login',
     data () {
         return {
-            
+            mail: '',
+            password: ''
         }
     },
+    methods: {
+        Login: function () {
+            this.$store.dispatch("login", {
+                // username: this.username,
+                mail: this.mail,
+                password: this.password,
+            })
+
+        // firebaseのauth機能のメール認証を行う
+            // firebase.auth().signInWithEmailAndPassword(this.mail, this.password)
+            // .then(user => {
+            //     alert('Login!: ', user.mail)
+            // })
+            // .catch(error => {
+            //     alert(error.message)
+            // });
+        }
+    }
 }
 </script>
 
@@ -32,7 +64,7 @@ li {
 a {
   color: #42b983;
 }
-.signup {
+.login {
   margin-top: 20px;
 
   display: flex;
