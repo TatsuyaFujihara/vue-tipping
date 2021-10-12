@@ -2,6 +2,7 @@ import Vue from "vue";
 import Vuex from "vuex";
 import firebase from 'firebase'
 import router from './router';
+import {db} from './main'
 
 Vue.use(Vuex);
 
@@ -68,7 +69,9 @@ export default new Vuex.Store({
             commit('login');
         },
 
-        home({commit}, {mail, db}) {
+        home({commit}) {
+            const user = firebase.auth().currentUser;
+            const mail = user.email;
             db.collection('user').doc(mail).get()
             .then(function(doc) {
                 const data = doc.data();

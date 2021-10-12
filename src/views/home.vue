@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import firebase from 'firebase'
+// import firebase from 'firebase'
 
 export default {
   name: 'Home',
@@ -22,14 +22,7 @@ export default {
       }
   },
   created: function() {
-    const user = firebase.auth().currentUser;
-    const mail = user.email;
-    const db = firebase.firestore();
-    
-    this.$store.dispatch("home", {
-      mail: mail,
-      db: db
-    })
+    this.$store.dispatch("home")
   },
   computed: {
     users() {
