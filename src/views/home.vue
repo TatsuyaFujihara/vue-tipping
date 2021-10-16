@@ -6,6 +6,7 @@
         <div class="userData" v-for="(user,index) in users" :key="index">
             <span class="name">{{user.name}}さんようこそ！</span>
             <span class="money">残高 : {{user.money}}</span>
+            <button class="logout" @click="Logout">ログアウト</button>
         </div>
       </div>
   </div>
@@ -27,6 +28,11 @@ export default {
   computed: {
     users() {
       return this.$store.getters.user;
+    }
+  },
+  methods: {
+    Logout: function () {
+      this.$store.dispatch("logout")
     }
   }
 }
