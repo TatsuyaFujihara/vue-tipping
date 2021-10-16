@@ -34,15 +34,6 @@ export default {
                 mail: this.mail,
                 password: this.password,
             })
-
-        // firebaseのauth機能のメール認証を行う
-            // firebase.auth().signInWithEmailAndPassword(this.mail, this.password)
-            // .then(user => {
-            //     alert('Login!: ', user.mail)
-            // })
-            // .catch(error => {
-            //     alert(error.message)
-            // });
         }
     }
 }
