@@ -4,6 +4,7 @@ import firebase from 'firebase'
 import router from './router';
 import {db} from './main'
 
+
 Vue.use(Vuex);
 
 export default new Vuex.Store({
@@ -82,8 +83,17 @@ export default new Vuex.Store({
             }).catch(function(error) {
                 console.log("Error getting document:", error);
             });
+        },
 
-
+        logout({commit}) {
+            firebase.auth().signOut()
+            .then(function () {
+                router.push('/login')
+            })
+            .catch(function () {
+                console.log('ログアウトが失敗しました')
+            });
+            commit('login');
         }
             
     }
