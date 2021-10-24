@@ -11,11 +11,13 @@ export default new Vuex.Store({
     state: {
         db: '',
         dbData: '',
-        userDate: []
+        userDate: [],
+        otherUser: []
     },
 
     getters: {
-        user: state => state.userDate
+        user: state => state.userDate,
+        otherUser: state => state.otherUser,
     },
 
     mutations: {
@@ -30,8 +32,16 @@ export default new Vuex.Store({
                 name: username,
                 money: money
             };
-            state.userDate.push(userDate);
+
+            state.userDate.push(userDate); 
         },
+        otherUser(state, {otherUser, userMoney}) {
+            const otherUserDate = {
+                name: otherUser,
+                money: userMoney
+            };
+            state.otherUser.push(otherUserDate);
+        }
     },
     
     actions: {
@@ -46,6 +56,7 @@ export default new Vuex.Store({
             });
             
             dbData.doc(mail).set({
+                mail: mail,
                 username: username,
                 money: '500'
             })
@@ -73,16 +84,32 @@ export default new Vuex.Store({
         home({commit}) {
             const user = firebase.auth().currentUser;
             const mail = user.email;
+        // ログイン状態のユーザー情報取得    
             db.collection('user').doc(mail).get()
             .then(function(doc) {
                 const data = doc.data();
                 const username = data.username;
                 const money = data.money;
-
                 commit('home', {username, money});
+                
             }).catch(function(error) {
                 console.log("Error getting document:", error);
             });
+            
+            // 他ユーザ情報の取得
+            db.collection('user').where('mail', '!=', mail).get()
+            .then((snapshot) => {
+                snapshot.forEach((doc) => {
+                    const otherDate = doc.data();
+                    const otherUser = otherDate.username;
+                    const userMoney = otherDate.money;
+                    // console.log(otherUser);
+                    commit('otherUser', {otherUser, userMoney});
+                });
+            })
+            .catch( (error) => {
+                console.log(`データの取得に失敗しました (${error})`);
+            });            
         },
 
         logout({commit}) {

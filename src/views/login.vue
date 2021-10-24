@@ -1,5 +1,6 @@
 <template>
     <div class="login">
+        <img src="@/assets/logo.png">
         <h2>Login</h2>
         <table>
             <tr>
