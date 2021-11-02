@@ -125,33 +125,28 @@ export default new Vuex.Store({
             });
             commit('login');
         },
-        sendMoney({state, dispatch, commit}, {receiveUser, userMoney, tradeMoney}) {
+        sendMoney({state, dispatch, commit}, {receiveUser, tradeMoney, userMoney}) {
 // =========================支払い動作==============================
             const mainUser = firebase.auth().currentUser;
             const mainUserMail = mainUser.email;
             const mainUserMoney = state.userDate[0].money;
 
-            db.collection('user').doc(mainUserMail).update({
-                money: mainUserMoney - tradeMoney
-            })
-            .then(function () {
-                console.log('メインの更新に更新')
-            })
-            .catch(function () {
-                console.log('メインの更新に失敗')
-            });
-            
-// =========================送金動作==============================
-            db.collection('user').doc(receiveUser).update({
-                money: userMoney + Number(tradeMoney),
-            })
-            .then(function () {
-                dispatch('home');
-            })
-            .catch(function () {
-                console.log('送金に失敗しました')
-            });
-            commit('sendMoney');
+            const sendUserRef = db.collection('user').doc(mainUserMail);
+            const receiveUserRef = db.collection('user').doc(receiveUser);
+            console.log(receiveUserRef);
+
+        db.runTransaction(async transaction => {
+            transaction.update(sendUserRef, {money: mainUserMoney - tradeMoney});
+            transaction.update(receiveUserRef, {money: userMoney + tradeMoney});
+        })
+        .then(() => {
+            console.log("トランザクション成功");
+            dispatch('home');
+        })
+        .catch((error) => {
+            console.log("Transaction failed: ", error);
+        })
+        commit('sendMoney');
         }
             
     }
