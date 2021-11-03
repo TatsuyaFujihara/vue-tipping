@@ -9,7 +9,6 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
     state: {
-        db: '',
         dbData: '',
         userDate: [],
         otherUser: []
@@ -32,15 +31,20 @@ export default new Vuex.Store({
                 name: username,
                 money: money
             };
-
-            state.userDate.push(userDate); 
+            state.userDate.splice(0, state.userDate.length);
+            console.log(state.userDate.length);
+            state.userDate.push(userDate);
         },
-        otherUser(state, {otherUser, userMoney}) {
+        otherUser(state, {otherUser, userMoney, userAddress}) {
             const otherUserDate = {
                 name: otherUser,
-                money: userMoney
+                money: userMoney,
+                mail: userAddress
             };
             state.otherUser.push(otherUserDate);
+        },
+        sendMoney(state) {
+            state.otherUser.splice(0, state.otherUser.length);
         }
     },
     
@@ -84,7 +88,7 @@ export default new Vuex.Store({
         home({commit}) {
             const user = firebase.auth().currentUser;
             const mail = user.email;
-        // ログイン状態のユーザー情報取得    
+// =========================ログイン中のユーザー情報の取得==============================
             db.collection('user').doc(mail).get()
             .then(function(doc) {
                 const data = doc.data();
@@ -96,22 +100,21 @@ export default new Vuex.Store({
                 console.log("Error getting document:", error);
             });
             
-            // 他ユーザ情報の取得
+// =========================他ユーザーの取得==============================
             db.collection('user').where('mail', '!=', mail).get()
             .then((snapshot) => {
                 snapshot.forEach((doc) => {
                     const otherDate = doc.data();
                     const otherUser = otherDate.username;
                     const userMoney = otherDate.money;
-                    // console.log(otherUser);
-                    commit('otherUser', {otherUser, userMoney});
+                    const userAddress = otherDate.mail;
+                    commit('otherUser', {otherUser, userMoney, userAddress});
                 });
             })
             .catch( (error) => {
                 console.log(`データの取得に失敗しました (${error})`);
             });            
         },
-
         logout({commit}) {
             firebase.auth().signOut()
             .then(function () {
@@ -121,6 +124,29 @@ export default new Vuex.Store({
                 console.log('ログアウトが失敗しました')
             });
             commit('login');
+        },
+        sendMoney({state, dispatch, commit}, {receiveUser, tradeMoney, userMoney}) {
+// =========================支払い動作==============================
+            const mainUser = firebase.auth().currentUser;
+            const mainUserMail = mainUser.email;
+            const mainUserMoney = state.userDate[0].money;
+
+            const sendUserRef = db.collection('user').doc(mainUserMail);
+            const receiveUserRef = db.collection('user').doc(receiveUser);
+            console.log(receiveUserRef);
+
+        db.runTransaction(async transaction => {
+            transaction.update(sendUserRef, {money: mainUserMoney - tradeMoney});
+            transaction.update(receiveUserRef, {money: userMoney + tradeMoney});
+        })
+        .then(() => {
+            console.log("トランザクション成功");
+            dispatch('home');
+        })
+        .catch((error) => {
+            console.log("Transaction failed: ", error);
+        })
+        commit('sendMoney');
         }
             
     }
